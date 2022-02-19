@@ -1,0 +1,12 @@
+
+server:
+  port: 3004
+
+spring:
+  application:
+    name: auth-service
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone:

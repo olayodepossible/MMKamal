@@ -13,6 +13,7 @@
 	<modules>
 		<module>Eureka-server</module>
 		<module>sms-service</module>
+		<module>AuthService</module>
 	</modules>
 
 	<properties>
