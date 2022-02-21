@@ -1,0 +1,32 @@
+server:
+  port: 8007
+
+spring:
+  application:
+    name: sms-service
+  datasource:
+    url: jdbc:postgresql://localhost:9040/mmkamal
+    username: postgres
+    password: ${password}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+    sql:
+      init:
+        mode: always
+
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
