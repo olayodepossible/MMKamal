@@ -1,6 +1,5 @@
-package com.possible.mmk.gatewayserver.filters;
+package com.possible.mmk.security;
 
-import com.possible.mmk.gatewayserver.config.JwtConfig;
 import com.possible.mmk.services.UserServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +24,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    private final JwtConfig jwtUtil;
+    private final JwtTokenUtil jwtTokenUtil;
     private final UserServiceImpl userDetailService;
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
@@ -37,7 +35,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             jwtToken = header.substring(7);
             try {
-                userName = jwtUtil.getUserNameFromToken(jwtToken);
+                userName = jwtTokenUtil.getUserNameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
                 log.error("Unable to get JWT token");
             } catch (ExpiredJwtException e) {
@@ -50,7 +48,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (Objects.nonNull(userName) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailService.loadUserByUsername(userName);
 
-            if (Boolean.TRUE == jwtUtil.validateToken(jwtToken, userDetails)) {
+            if (Boolean.TRUE == jwtTokenUtil.validateToken(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

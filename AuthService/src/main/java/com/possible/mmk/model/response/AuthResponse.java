@@ -6,10 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class AppResponse<T> {
-    private Boolean success;
-    private String message;
+@NoArgsConstructor
+@Builder
+public class AuthResponse {
+
+    private String accessToken;
+    private String refreshToken;
+
 }
