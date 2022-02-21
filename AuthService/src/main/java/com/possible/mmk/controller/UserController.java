@@ -4,6 +4,7 @@ import com.possible.mmk.model.AppUser;
 import com.possible.mmk.model.request.RegistrationRequest;
 import com.possible.mmk.model.response.AppResponse;
 import com.possible.mmk.repository.AppUserRepository;
+import com.possible.mmk.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,18 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-        private final PasswordEncoder bCryptPasswordEncoder;
-
-        private final AppUserRepository appUserRepository;
+        private final UserService userService;
 
         @PostMapping(value = "/create")
-        public ResponseEntity<AppResponse> createUser(@RequestBody RegistrationRequest userRegistrationRequest){
-            AppUser appUser = new AppUser();
-            appUser.setPassword(bCryptPasswordEncoder.encode(userRegistrationRequest.getPassword()));
-            appUser.setUsername(userRegistrationRequest.getUserName());
-            appUser.setRoles("ROLE_USER");
-            appUserRepository.save(appUser);
-            return new ResponseEntity(AppResponse.builder().message("User Registration Successfully Completed").data(appUser).build(), HttpStatus.CREATED);
+        public ResponseEntity<AppResponse> createUser(@RequestBody RegistrationRequest request){
+             userService.createNewUser(request);
+            return new ResponseEntity(AppResponse.builder().message("User Registration Successfully Completed").success(Boolean.TRUE).build(), HttpStatus.CREATED);
         }
 
 
