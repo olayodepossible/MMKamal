@@ -1,6 +1,5 @@
 package com.possible.mmk.gatewayserver.filters;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -11,14 +10,11 @@ import javax.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Date;
 
-/**
- * Author : Abayomi
- */
 
 @Component
 public class JwtUtil {
 
-    @Value("${security.jwt.secret}")
+    @Value("${jwt.secret}")
     private String secret;
 
     private Key key;
