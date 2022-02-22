@@ -2,7 +2,6 @@ package com.possible.mmk.gatewayserver.filters;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -15,9 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+@Order(1)
 @RefreshScope
 @Component
-@Order(1)
 @RequiredArgsConstructor
 public class AuthenticationFilter implements GatewayFilter {
 
@@ -44,8 +43,6 @@ public class AuthenticationFilter implements GatewayFilter {
         return chain.filter(exchange);
     }
 
-
-    /*PRIVATE*/
 
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
         ServerHttpResponse response = exchange.getResponse();

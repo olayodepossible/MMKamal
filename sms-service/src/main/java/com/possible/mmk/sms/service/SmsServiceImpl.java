@@ -1,7 +1,7 @@
 package com.possible.mmk.sms.service;
 
-import com.possible.mmk.sms.model.dto.ResponseDto;
-import com.possible.mmk.sms.model.dto.SmsDto;
+import com.possible.mmk.sms.dto.ResponseDto;
+import com.possible.mmk.sms.dto.SmsDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,7 +27,7 @@ Any unexpected error:
 If all parameters are valid:
 {“message”: “inbound sms ok”, “error”: ””}
          */
-        return null;
+        return ResponseDto.builder().message("Available soon").error("no error").build();
     }
 
     @Override
@@ -65,6 +65,6 @@ If all parameters are valid:
 {“message”: “outbound sms ok”, “error”: “”}
 
          */
-        return null;
+        return ResponseDto.builder().message("Available soon").error("no error").build();
     }
 }

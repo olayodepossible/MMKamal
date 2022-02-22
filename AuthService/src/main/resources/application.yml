@@ -9,6 +9,8 @@ spring:
     url: jdbc:postgresql://localhost:9040/mmkamal
     username: postgres
     password: ${password}
+  flyway:
+    baseline-on-migrate: true
 
   jpa:
     hibernate:
@@ -22,11 +24,17 @@ spring:
     init:
       mode: always
 
-#eureka:
-#  instance:
-#    preferIpAddress: true
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka
-#    fetch-registry: true
-#    register-with-eureka: true
+
+security:
+  jwt:
+    uri: /api/v1/auth/**
+    authUri: /users/login
+    expiration: 86400
+    secret: BvPHGM8C0ia4uOuxxqPD5DTbWC9F9TWvPStp3pb7ARo0oK2mJ3pd3YG4lxA9i8bj6OTbadwezxgeEByY
+
+
+flyway:
+  url: jdbc:postgresql://localhost:9040/mmkamal
+  username: postgres
+  password: ${password}
+  schemas: mmkamal

@@ -1,8 +1,7 @@
 package com.possible.mmk.sms.controller;
 
-import com.possible.mmk.sms.model.dto.SmsDto;
-import com.possible.mmk.sms.service.SmsService;
-import com.possible.mmk.sms.model.dto.ResponseDto;
+import com.possible.mmk.sms.dto.SmsDto;
+import com.possible.mmk.sms.dto.ResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
