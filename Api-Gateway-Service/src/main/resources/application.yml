@@ -4,23 +4,6 @@ server:
 spring:
   application:
     name: gateway-service
-#  cloud:
-#    loadbalancer:
-#      ribbon:
-#        enabled: false
-#    gateway:
-#      discovery:
-#        locator:
-#          enable: true
-#          lower-case-service-id: true
-#     routes:
-#       - id: sms-service
-#         uri: lb://
-#         predicate:
-#           path=/uri/**
-#         filters:
-#           - RewritePath=/course/(?<path>.*), /$\{path}
-#           - RemoveRequestHeader= Cookie,Set-Cookie
 
 eureka:
   instance:
@@ -55,15 +38,15 @@ management:
   endpoint:
     routes:
       enabled: true
-zuul:
-  sensitive-headers: Cookie,Set-Cookie
-  routes:
-    auth-server:
-      path: /api/v1/auth/users/**
-      url: http://localhost:8004/api/v1/auth/users
-    sms-server:
-      path: /api/v1/sms/**
-      url: http://localhost:8007/api/v1/sms
-
-ribbon:
-  ReadTimeout: 60000
+#zuul:
+#  sensitive-headers: Cookie,Set-Cookie
+#  routes:
+#    auth-server:
+#      path: /api/v1/auth/users/**
+#      url: http://localhost:8004/api/v1/auth/users
+#    sms-server:
+#      path: /api/v1/sms/**
+#      url: http://localhost:8007/api/v1/sms
+#
+#ribbon:
+#  ReadTimeout: 60000
