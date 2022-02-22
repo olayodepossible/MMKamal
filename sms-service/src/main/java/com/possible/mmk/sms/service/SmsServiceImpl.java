@@ -1,17 +1,39 @@
 package com.possible.mmk.sms.service;
 
+import com.possible.mmk.feign.UserAuthClient;
+import com.possible.mmk.feign.dto.PhoneNumberDto;
+import com.possible.mmk.feign.dto.UserDto;
 import com.possible.mmk.sms.dto.ResponseDto;
 import com.possible.mmk.sms.dto.SmsDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class SmsServiceImpl implements SmsService{
+
+    private final UserAuthClient userAuthClient;
+
     @Override
-    public ResponseDto sendInboundSms(SmsDto smsDto) {
+    public ResponseDto sendInboundSms(SmsDto smsDto, String username) {
+        UserDto dto = userAuthClient.getUser(username);
+        List<PhoneNumberDto> numberDtoList = dto.getPhoneNumbers();
+
+        Optional<PhoneNumberDto> phoneNumberObject = numberDtoList.stream()
+                        .filter(p -> p.getNumber().equals(smsDto.getTo())).findFirst();
+        if (phoneNumberObject.isEmpty()){
+            return
+        }
         //TODO
         /*
         - If the ‘to’ parameter is not present in the phone_number table for this specific account
 you used for the basic authentication, return an error (see Output JSON response below).
+
 - When text is STOP or STOP\n or STOP\r or STOP\r\n
 - The ‘from’ and ‘to’ pair must be stored in cache as a unique entry and should expire after 4 hours.
 Output JSON response
@@ -27,6 +49,8 @@ Any unexpected error:
 If all parameters are valid:
 {“message”: “inbound sms ok”, “error”: ””}
          */
+
+        log.info("USER *****\n {}", dto);
         return ResponseDto.builder().message("Available soon").error("no error").build();
     }
 
