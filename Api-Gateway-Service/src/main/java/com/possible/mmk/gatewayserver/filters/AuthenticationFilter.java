@@ -2,6 +2,7 @@ package com.possible.mmk.gatewayserver.filters;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Order(1)
 @RefreshScope
 @Component
@@ -31,12 +33,12 @@ public class AuthenticationFilter implements GatewayFilter {
 
         if (routerValidator.isSecured.test(request)) {
             if (this.isAuthMissing(request))
-                return this.onError(exchange, "Authorization header is missing in request", HttpStatus.UNAUTHORIZED);
+                return this.onError(exchange, "Authorization header is missing in request", HttpStatus.FORBIDDEN);
 
             final String token = this.getAuthHeader(request);
 
             if (jwtUtil.isInvalid(token))
-                return this.onError(exchange, "Authorization header is invalid", HttpStatus.UNAUTHORIZED);
+                return this.onError(exchange, "Authorization header is invalid", HttpStatus.FORBIDDEN);
 
             this.populateRequestWithHeaders(exchange, token);
         }
@@ -59,7 +61,10 @@ public class AuthenticationFilter implements GatewayFilter {
     }
 
     private void populateRequestWithHeaders(ServerWebExchange exchange, String token) {
+        log.info("*** populateRequestWithHeaders ***** ");
         Claims claims = jwtUtil.getAllClaimsFromToken(token);
+        log.info("*** CLAIM_ID ***** {}", claims.get("id"));
+        log.info("*** CLAIM_ROLE ***** {}", claims.get("role"));
         exchange.getRequest().mutate()
                 .header("id", String.valueOf(claims.get("id")))
                 .header("role", String.valueOf(claims.get("role")))
