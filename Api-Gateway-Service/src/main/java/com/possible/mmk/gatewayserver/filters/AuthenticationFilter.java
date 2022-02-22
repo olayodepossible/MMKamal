@@ -42,6 +42,7 @@ public class AuthenticationFilter implements GatewayFilter {
 
             this.populateRequestWithHeaders(exchange, token);
         }
+
         return chain.filter(exchange);
     }
 
@@ -61,12 +62,9 @@ public class AuthenticationFilter implements GatewayFilter {
     }
 
     private void populateRequestWithHeaders(ServerWebExchange exchange, String token) {
-        log.info("*** populateRequestWithHeaders ***** ");
         Claims claims = jwtUtil.getAllClaimsFromToken(token);
-        log.info("*** CLAIM_ID ***** {}", claims.get("id"));
-        log.info("*** CLAIM_ROLE ***** {}", claims.get("role"));
         exchange.getRequest().mutate()
-                .header("id", String.valueOf(claims.get("id")))
+                .header("user_id", String.valueOf(claims.get("id")))
                 .header("role", String.valueOf(claims.get("role")))
                 .build();
     }

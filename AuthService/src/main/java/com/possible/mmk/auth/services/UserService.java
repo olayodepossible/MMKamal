@@ -4,8 +4,12 @@ import com.possible.mmk.auth.model.request.RequestDto;
 import com.possible.mmk.auth.model.response.AuthResponse;
 import com.possible.mmk.auth.model.AppUser;
 
+import java.util.Optional;
+
 public interface UserService {
     AppUser createNewUser(RequestDto request);
 
     AuthResponse userLogin(RequestDto request);
+
+    AppUser fetchUser(String username);
 }
