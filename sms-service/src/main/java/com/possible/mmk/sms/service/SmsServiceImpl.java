@@ -7,6 +7,8 @@ import com.possible.mmk.sms.dto.ResponseDto;
 import com.possible.mmk.sms.dto.SmsDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +20,12 @@ import java.util.Optional;
 public class SmsServiceImpl implements SmsService{
 
     private final UserAuthClient userAuthClient;
+    private final RedisTemplate redisTemplate;
+    private HashOperations hashOperations = redisTemplate.opsForHash();
 
     @Override
+//    @Caching(evict = { @CacheEvict(value = "usersList", allEntries = true), }, put = {
+//            @CachePut(value = "user", key = "#user.getUserId()") })
     public ResponseDto sendInboundSms(SmsDto smsDto, String username) {
         UserDto dto = userAuthClient.getUser(username);
         List<PhoneNumberDto> numberDtoList = dto.getPhoneNumbers();
@@ -27,12 +33,11 @@ public class SmsServiceImpl implements SmsService{
         Optional<PhoneNumberDto> phoneNumberObject = numberDtoList.stream()
                         .filter(p -> p.getNumber().equals(smsDto.getTo())).findFirst();
         if (phoneNumberObject.isEmpty()){
-            return
+            return ResponseDto.builder().message("").error(String.format("'%s' - parameter not found", smsDto.getTo())).build();
         }
         //TODO
         /*
-        - If the ‘to’ parameter is not present in the phone_number table for this specific account
-you used for the basic authentication, return an error (see Output JSON response below).
+
 
 - When text is STOP or STOP\n or STOP\r or STOP\r\n
 - The ‘from’ and ‘to’ pair must be stored in cache as a unique entry and should expire after 4 hours.
