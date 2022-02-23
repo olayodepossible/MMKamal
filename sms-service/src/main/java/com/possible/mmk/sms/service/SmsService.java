@@ -6,5 +6,5 @@ import com.possible.mmk.sms.dto.SmsDto;
 public interface SmsService {
     ResponseDto sendInboundSms(SmsDto smsDto, String username);
 
-    ResponseDto sendOutboundSms(SmsDto smsDto);
+    ResponseDto sendOutboundSms(SmsDto smsDto, String username);
 }
