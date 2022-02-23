@@ -4,9 +4,10 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 @Data
-public class SmsDto {
+public class SmsDto implements Serializable {
 
     @NotBlank(message = "Sender phone number may not be null")
     @Size(min = 6, max = 16)
