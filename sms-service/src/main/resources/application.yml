@@ -4,7 +4,14 @@ server:
 spring:
   application:
     name: sms-service
+  redis:
+    host: 127.0.0.1
+    port: 6379
 
+  cache:
+    redis:
+      cache-null-values: false
+      time-to-live: 14400
 
 eureka:
   instance:
