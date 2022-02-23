@@ -30,8 +30,8 @@ public class SmsController {
     }
 
     @PostMapping("outbound/service")
-    public ResponseEntity<ResponseDto> outboundSms(@RequestBody @Valid SmsDto smsDto){
-        ResponseDto responseDto = smsService.sendOutboundSms(smsDto);
+    public ResponseEntity<ResponseDto> outboundSms(@RequestBody @Valid SmsDto smsDto, @RequestHeader(value = "user_id") String username){
+        ResponseDto responseDto = smsService.sendOutboundSms(smsDto, username);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
