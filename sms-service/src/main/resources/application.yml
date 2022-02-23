@@ -11,7 +11,9 @@ spring:
   cache:
     redis:
       cache-null-values: false
-      time-to-live: 14400
+      time-to-live: 360
+#      time-to-live: 14400
+
 
 eureka:
   instance:

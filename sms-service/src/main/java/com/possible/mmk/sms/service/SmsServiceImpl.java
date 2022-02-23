@@ -5,27 +5,33 @@ import com.possible.mmk.feign.dto.PhoneNumberDto;
 import com.possible.mmk.feign.dto.UserDto;
 import com.possible.mmk.sms.dto.ResponseDto;
 import com.possible.mmk.sms.dto.SmsDto;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class SmsServiceImpl implements SmsService{
 
     private final UserAuthClient userAuthClient;
-    private final RedisTemplate redisTemplate;
-    private HashOperations hashOperations = redisTemplate.opsForHash();
+    private final RedisTemplate<String, Map<String, Object>> redisTemplate;
+    private HashOperations hashOperations;
+
+    public SmsServiceImpl(UserAuthClient userAuthClient, RedisTemplate<String, Map<String, Object>> redisTemplateStandAlone) {
+        this.userAuthClient = userAuthClient;
+        this.redisTemplate = redisTemplateStandAlone;
+        hashOperations = redisTemplate.opsForHash();
+    }
+
+
 
     @Override
-//    @Caching(evict = { @CacheEvict(value = "usersList", allEntries = true), }, put = {
-//            @CachePut(value = "user", key = "#user.getUserId()") })
     public ResponseDto sendInboundSms(SmsDto smsDto, String username) {
         UserDto dto = userAuthClient.getUser(username);
         List<PhoneNumberDto> numberDtoList = dto.getPhoneNumbers();
@@ -35,28 +41,13 @@ public class SmsServiceImpl implements SmsService{
         if (phoneNumberObject.isEmpty()){
             return ResponseDto.builder().message("").error(String.format("'%s' - parameter not found", smsDto.getTo())).build();
         }
-        //TODO
-        /*
 
+        if(smsDto.getText().trim().equalsIgnoreCase("STOP")){
+            hashOperations.put("SMS", dto.getId(), smsDto);
+            return ResponseDto.builder().message("data cached successfully").error("").build();
+        }
 
-- When text is STOP or STOP\n or STOP\r or STOP\r\n
-- The ‘from’ and ‘to’ pair must be stored in cache as a unique entry and should expire after 4 hours.
-Output JSON response
-If required parameter is missing:
-{“message”: “”, “error”: “<parameter_name> is missing”}
-If parameter is invalid:
-{“message”: “”, “error”: “<parameter_name> is invalid”}
-
-If ‘to’ is not found in the phone_number table for this account: {“message”: “”, “error”: “to parameter not found”}
-
-Any unexpected error:
-{“message”: “”, “error”: “unknown failure”}
-If all parameters are valid:
-{“message”: “inbound sms ok”, “error”: ””}
-         */
-
-        log.info("USER *****\n {}", dto);
-        return ResponseDto.builder().message("Available soon").error("no error").build();
+        return ResponseDto.builder().message("inbound sms ok").error("").build();
     }
 
     @Override

@@ -37,9 +37,10 @@ public class AuthenticationFilter implements GatewayFilter {
 
             final String token = this.getAuthHeader(request);
 
-            if (jwtUtil.isInvalid(token))
+            if (jwtUtil.isInvalid(token)) {
+                log.info("REAHER HER ******************");
                 return this.onError(exchange, "Authorization header is invalid", HttpStatus.FORBIDDEN);
-
+            }
             this.populateRequestWithHeaders(exchange, token);
         }
 
@@ -50,6 +51,8 @@ public class AuthenticationFilter implements GatewayFilter {
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
+        response.setRawStatusCode(403);
+
         return response.setComplete();
     }
 
