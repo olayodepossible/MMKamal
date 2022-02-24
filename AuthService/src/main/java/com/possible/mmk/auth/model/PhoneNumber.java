@@ -5,6 +5,11 @@ import lombok.Data;
 
 import javax.persistence.*;
 
+/**
+ *
+ * @author Abayomi
+ */
+
 @Entity
 @Data
 public class PhoneNumber {

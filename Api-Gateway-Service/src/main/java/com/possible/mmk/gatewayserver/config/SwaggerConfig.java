@@ -7,6 +7,10 @@ import springfox.documentation.swagger.web.SwaggerResourcesProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+/**
+ *
+ * @author Abayomi
+ */
 
 @Component
 @Primary

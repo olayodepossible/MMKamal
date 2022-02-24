@@ -22,6 +22,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ *
+ * @author Abayomi
+ */
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -61,22 +66,20 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("user not found"));
     }
 
-    private AuthResponse createJwtToken(RequestDto  jwtRequest) throws Exception{
+    private AuthResponse createJwtToken(RequestDto  jwtRequest) {
         String userName = jwtRequest.getUserName();
         String userPassword = jwtRequest.getPassword();
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
         authenticate(userName, userPassword);
-        log.info("HERE--- 2");
         String accessToken = jwtUtil.generate(userDetails, "ACCESS");
         String refreshToken = jwtUtil.generate(userDetails, "REFRESH");
         String message = userDetails.getUsername() + " login successfully";
         return new AuthResponse(Boolean.TRUE, message, accessToken, refreshToken);
     }
 
-    private void authenticate(String userName, String userPassword) throws Exception{
+    private void authenticate(String userName, String userPassword) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, userPassword));
-            log.info("HERE--- 1");
         } catch (DisabledException e) {
             throw new DisabledException("User is disabled");
         } catch(BadCredentialsException e) {

@@ -14,6 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ *
+ * @author Abayomi
+ */
+
 @Component
 public class JwtTokenUtil {
 

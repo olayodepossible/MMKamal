@@ -8,15 +8,17 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ *
+ * @author Abayomi
+ */
+
 @Configuration
 @Slf4j
 public class GateWayConfig {
 
-    @Autowired
-    AuthenticationFilter authFilter;
-
     @Bean
-    public RouteLocator routes(RouteLocatorBuilder builder){
+    public RouteLocator routes(RouteLocatorBuilder builder, AuthenticationFilter authFilter){
         return builder.routes()
                 .route("sms-service", r -> r.path("/api/v1/sms/**")
                         .filters(f -> f.filter(authFilter).removeRequestHeader("Cookie"))

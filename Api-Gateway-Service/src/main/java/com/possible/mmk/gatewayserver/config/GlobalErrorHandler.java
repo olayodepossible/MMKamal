@@ -8,6 +8,11 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.Map;
 
+/**
+ *
+ * @author Abayomi
+ */
+
 @Component
 public class GlobalErrorHandler extends DefaultErrorAttributes {
 

@@ -16,6 +16,11 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+/**
+ *
+ * @author Abayomi
+ */
+
 @Component
 @Order(-2)
 public class GlobalErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {

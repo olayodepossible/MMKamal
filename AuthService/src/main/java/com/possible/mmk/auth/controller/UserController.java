@@ -9,6 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+/**
+ *
+ * @author Abayomi
+ */
 
 @RestController
 @RequestMapping( "api/v1/auth/users")
@@ -24,7 +28,7 @@ public class UserController {
         }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> loginUser(@RequestBody RequestDto request) throws Exception {
+    public ResponseEntity<AuthResponse> loginUser(@RequestBody RequestDto request) {
         AuthResponse response =  userService.userLogin(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
