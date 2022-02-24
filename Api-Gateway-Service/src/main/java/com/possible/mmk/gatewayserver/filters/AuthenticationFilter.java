@@ -15,6 +15,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+/**
+ *
+ * @author Abayomi
+ */
+
 @Slf4j
 @Order(1)
 @RefreshScope
@@ -52,7 +57,6 @@ public class AuthenticationFilter implements GatewayFilter {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
         response.setRawStatusCode(403);
-
         return response.setComplete();
     }
 

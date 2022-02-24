@@ -6,6 +6,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
+/**
+ *
+ * @author Abayomi
+ */
+
 @Data
 public class SmsDto implements Serializable {
 

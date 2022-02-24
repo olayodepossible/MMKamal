@@ -6,6 +6,10 @@ import com.possible.mmk.auth.model.AppUser;
 
 import java.util.Optional;
 
+/**
+ *
+ * @author Abayomi
+ */
 public interface UserService {
     AppUser createNewUser(RequestDto request);
 
