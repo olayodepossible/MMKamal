@@ -4,15 +4,17 @@ server:
 spring:
   application:
     name: sms-service
+  cache:
+    type: redis
+
   redis:
-    host: 127.0.0.1
+    clientName: MMKamal
+    host: localhost
     port: 6379
 
-  cache:
-    redis:
-      cache-null-values: false
-#      time-to-live: 180
-#      time-to-live: 14400
+cache-manager:
+  cachesTtl:
+    ttl-data: 70
 
 
 eureka:

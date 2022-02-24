@@ -3,13 +3,18 @@ package com.possible.mmk.sms.service;
 import com.possible.mmk.feign.UserAuthClient;
 import com.possible.mmk.feign.dto.PhoneNumberDto;
 import com.possible.mmk.feign.dto.UserDto;
+import com.possible.mmk.sms.config.CacheManagerConfig;
 import com.possible.mmk.sms.dto.ResponseDto;
 import com.possible.mmk.sms.dto.SmsDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,23 +23,18 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SmsServiceImpl implements SmsService{
 
     private final String OBJ_KEY = "SMS";
     private final int API_CALL_LIMIT = 50;
     private final UserAuthClient userAuthClient;
-    private final RedisTemplate<String, Map<String, Object>> redisTemplate;
-    private HashOperations hashOperations;
-
-    public SmsServiceImpl(UserAuthClient userAuthClient, RedisTemplate<String, Map<String, Object>> redisTemplateStandAlone) {
-        this.userAuthClient = userAuthClient;
-        this.redisTemplate = redisTemplateStandAlone;
-        hashOperations = redisTemplate.opsForHash();
-    }
+    private final CacheManager cacheManager;
 
 
 
     @Override
+
     public ResponseDto sendInboundSms(SmsDto smsDto, String username) {
         List<PhoneNumberDto> numberDtoList = fetchPhoneNumbers(username);
 
@@ -48,7 +48,7 @@ public class SmsServiceImpl implements SmsService{
         }
 
         if(smsDto.getText().trim().equalsIgnoreCase("STOP")){
-            hashOperations.put(OBJ_KEY, username, smsDto);
+            cacheSmsData(smsDto, username);
             return ResponseDto.builder().message("data cached successfully").error("").build();
         }
 
@@ -60,13 +60,13 @@ public class SmsServiceImpl implements SmsService{
     public ResponseDto sendOutboundSms(SmsDto smsDto, String username) {
         String dataKey = username +smsDto.getFrom();
         Integer apiCalls = 0;
-        boolean hasKey = hashOperations.hasKey(dataKey, smsDto.getFrom());
-
+        boolean hasKey = cacheManager.getCache(smsDto.getFrom()) != null;
         if (hasKey ){
-            Long ttl = redisTemplate.getExpire(dataKey, TimeUnit.SECONDS);
-            if(ttl > 0 && apiCalls < API_CALL_LIMIT){
+            log.info("HASKEY ***** - {}", apiCalls);
+            if(apiCalls < API_CALL_LIMIT){
                 ++apiCalls;
-                hashOperations.put(dataKey, smsDto.getFrom(), apiCalls);
+                cacheManager.getCache(smsDto.getFrom()).put(smsDto.getFrom(), apiCalls);
+                log.info("HASKEY-api ***** {}  ttl ****", apiCalls);
             }
             else {
                 return ResponseDto.builder()
@@ -76,23 +76,26 @@ public class SmsServiceImpl implements SmsService{
             }
 
         }
-
         else {
             ++apiCalls;
-            hashOperations.put(dataKey, smsDto.getFrom(), apiCalls);
-            redisTemplate.expire(dataKey, 120, TimeUnit.SECONDS);
+            cacheManager.getCache(smsDto.getFrom()).putIfAbsent(smsDto.getFrom(), apiCalls);
+            log.info("NO-HASKEY **** {} *****", apiCalls);
         }
 
-        Map<String, SmsDto> mapDto = hashOperations.entries(OBJ_KEY);
-        boolean result = mapDto.entrySet().stream()
-                .filter(x -> smsDto.getTo().equals(x.getValue()) || smsDto.getFrom().equals(x.getValue()))
-                .findFirst().isEmpty();
-        if (!result){
-            return ResponseDto.builder()
-                    .message("")
-                    .error(String.format("sms from '%s' to '%s' blocked by STOP request",smsDto.getFrom(), smsDto.getTo()))
-                    .build();
-        }
+        Collection<String> mapDto = cacheManager.getCacheNames();
+        Cache cacheDto = cacheManager.getCache(OBJ_KEY);
+        mapDto.forEach(e -> log.info("{} - ***** {}", e, cacheDto.getName()));
+        SmsDto cacheData = cacheSmsData(smsDto, username);
+        log.info("********* DATA ****** {}", cacheData);
+//        boolean result = mapDto.entrySet().stream()
+//                .filter(x -> smsDto.getTo().equals(x.getValue()) || smsDto.getFrom().equals(x.getValue()))
+//                .findFirst().isEmpty();
+//        if (!result){
+//            return ResponseDto.builder()
+//                    .message("")
+//                    .error(String.format("sms from '%s' to '%s' blocked by STOP request",smsDto.getFrom(), smsDto.getTo()))
+//                    .build();
+//        }
 
         List<PhoneNumberDto> numberDtoList = fetchPhoneNumbers(username);
         boolean isEmpty = numberDtoList.stream()
@@ -133,15 +136,30 @@ If all parameters are valid:
         return ResponseDto.builder().message("outbound sms ok").error("").build();
     }
 
-    private List<PhoneNumberDto> fetchPhoneNumbers(String username){
-        String objKey = username.toUpperCase();
-        if (hashOperations.entries(objKey).isEmpty()){
-            UserDto dto = userAuthClient.getUser(username);
-            hashOperations.put(objKey, username, dto.getPhoneNumbers());
-            redisTemplate.expire(objKey, 120, TimeUnit.SECONDS);
-            return dto.getPhoneNumbers();
-        }
+    @Cacheable(value = "usersCache", key = "#username")
+    public List<PhoneNumberDto> fetchPhoneNumbers(String username){
+        log.info("fetchPhoneNumbers **** {} ", username);
+        UserDto dto = userAuthClient.getUser(username);
+//        if (hashOperations.entries(objKey).isEmpty()){
+//
+//            hashOperations.put(objKey, username, dto.getPhoneNumbers());
+//            redisTemplate.expire(objKey, 70, TimeUnit.SECONDS);
+//            return dto.getPhoneNumbers();
+//        }
 
-        return hashOperations.values(objKey);
+        return dto.getPhoneNumbers();
     }
+
+    @Cacheable(value = OBJ_KEY, key = "#username")
+    public SmsDto cacheSmsData(SmsDto dto, String username){
+        return dto;
+    }
+
+
+    @Cacheable(value = "api_calls", key = "#username", condition = "#smsDto.getFrom()")
+    public SmsDto apiCallThreshold(SmsDto dto, String username){
+        return dto;
+    }
+
+
 }

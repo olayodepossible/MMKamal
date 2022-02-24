@@ -1,7 +1,8 @@
 package com.possible.mmk.feign.dto;
 
-import lombok.Builder;
 import lombok.Data;
+
+import java.io.Serializable;
 
 
 @Data
