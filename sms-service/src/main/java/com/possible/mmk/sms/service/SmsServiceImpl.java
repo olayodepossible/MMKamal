@@ -102,7 +102,7 @@ public class SmsServiceImpl implements SmsService {
     private List<PhoneNumberDto> fetchPhoneNumbers(String username) {
         String objKey = username.toUpperCase();
         RMap<Object, List<PhoneNumberDto>> map = redissonClient.getMap("myMap");
-        if (map.entrySet(objKey).isEmpty()) {
+        if (map.get(objKey).isEmpty()) {
             UserDto dto = userAuthClient.getUser(username);
             map.put(objKey, dto.getPhoneNumbers());
             return dto.getPhoneNumbers();
