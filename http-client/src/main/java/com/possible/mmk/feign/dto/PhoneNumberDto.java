@@ -10,9 +10,10 @@ import java.io.Serializable;
 
 @Data
 public class PhoneNumberDto implements Serializable {
+    private static final long serialVersionUID = 2405172041950251807L;
 
     private Long id;
     private String number;
 
-    private UserDto account;
+    private transient UserDto account;
 }
