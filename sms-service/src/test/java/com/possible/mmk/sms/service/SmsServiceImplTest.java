@@ -1,39 +1,18 @@
 package com.possible.mmk.sms.service;
 
-import com.possible.mmk.feign.UserAuthClient;
-import com.possible.mmk.feign.dto.PhoneNumberDto;
-import com.possible.mmk.feign.dto.UserDto;
-import com.possible.mmk.sms.dto.ResponseDto;
 import com.possible.mmk.sms.dto.SmsDto;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.*;
-import org.mockito.*;
-import org.redisson.api.RMap;
-import org.redisson.api.RMapCache;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import redis.embedded.RedisServer;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import java.lang.reflect.MalformedParameterizedTypeException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 @Slf4j
 class SmsServiceImplTest {
 
