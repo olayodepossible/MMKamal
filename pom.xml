@@ -73,6 +73,11 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>${spring.boot.maven.plugin.version}</version>
+
+					<configuration>
+						<source>11</source>
+						<target>11</target>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
