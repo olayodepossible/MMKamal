@@ -67,14 +67,12 @@
 	</dependencies>
 
 	<build>
-		<defaultGoal>install</defaultGoal>
 		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>${spring.boot.maven.plugin.version}</version>
-
 				</plugin>
 			</plugins>
 		</pluginManagement>
